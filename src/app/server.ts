@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
+
+
 import app from './app';
 import confiq from './confiq';
 
 
-// console.log(process.env.DATABASE_URL)
 
 async function main() {
   try {
