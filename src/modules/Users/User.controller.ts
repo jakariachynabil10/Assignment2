@@ -113,9 +113,12 @@ const updateSingleUser = async (req: Request, res: Response) => {
     const userIdNum = parseFloat(userId);
     const updateData = req.body.user;
 
-    const checkUserExists = await UserService.getSingleUserFromDB(userIdNum)
+    const checkUserExists = await UserService.getSingleUserFromDB(userIdNum);
 
-    if (!checkUserExists || (Array.isArray(checkUserExists) && checkUserExists.length === 0)) {
+    if (
+      !checkUserExists ||
+      (Array.isArray(checkUserExists) && checkUserExists.length === 0)
+    ) {
       return res.status(404).json({
         success: false,
         message: "User not Found",
@@ -126,10 +129,9 @@ const updateSingleUser = async (req: Request, res: Response) => {
       });
     }
 
-
     const result = await UserService.updateSingleUserFromDB(
       userIdNum,
-      updateData
+      updateData,
     );
 
     res.status(200).json({
@@ -141,11 +143,47 @@ const updateSingleUser = async (req: Request, res: Response) => {
   } catch (err: any) {
     res.status(500).json({
       success: false,
-      message: "User not Found",
-      error: {
-        code: "404",
-        description: "User Not Found",
-      },
+      message: err.message,
+      error: err,
+    });
+  }
+};
+
+
+const deleteSingleUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const userIdNum = parseFloat(userId);
+
+    const checkUserExists = await UserService.getSingleUserFromDB(userIdNum);
+
+    if (
+      !checkUserExists ||
+      (Array.isArray(checkUserExists) && checkUserExists.length === 0)
+    ) {
+      return res.status(404).json({
+        success: false,
+        message: "User not Found",
+        error: {
+          code: "404",
+          description: "User Not Found",
+        },
+      });
+    }
+
+    const result = await UserService.deleteSingleUserFromDB(userIdNum)
+
+    res.status(200).json({
+      success: true,
+      message: "User Deleted Successfully",
+      data: result,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+      error: err,
     });
   }
 };
@@ -155,4 +193,5 @@ export const UserController = {
   getAllUsers,
   getSingleUser,
   updateSingleUser,
+  deleteSingleUser
 };

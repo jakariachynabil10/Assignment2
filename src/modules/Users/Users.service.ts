@@ -23,13 +23,18 @@ const getSingleUserFromDB = async (userId: number) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const updateSingleUserFromDB = async (id: number, newData: any) => {
   const result = await UserModel.updateOne({ userId: id }, newData);
-
   return result;
 };
+
+const deleteSingleUserFromDB = async (id : number) =>{
+  const result = await UserModel.deleteOne({userId : id})
+  return result
+}
 
 export const UserService = {
   createUserIntoDB,
   getAllUserFromDB,
   getSingleUserFromDB,
   updateSingleUserFromDB,
+  deleteSingleUserFromDB
 };
