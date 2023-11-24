@@ -107,6 +107,49 @@ const getSingleUser = async (req: Request, res: Response) => {
     });
   }
 };
+
+
+
+const getProductFromUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const userIdNum = parseFloat(userId);
+    const result = await UserService.getSingleUserFromDB(userIdNum);
+
+    if (!result || (Array.isArray(result) && result.length === 0)) {
+      return res.status(404).json({
+        success: false,
+        message: "User not Found",
+        error: {
+          code: "404",
+          description: "User Not Found",
+        },
+      });
+    }
+
+    const UserResponseCustomize = result.map((user) => ({
+      orders: user.orders,
+    }));
+
+    res.status(200).json({
+      success: true,
+      message: "Order fetched Successfully",
+      data: UserResponseCustomize,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: "User not Found",
+      error: {
+        code: "404",
+        description: "User Not Found",
+      },
+    });
+  }
+};
+
+
 const updateSingleUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
@@ -232,5 +275,6 @@ export const UserController = {
   getSingleUser,
   updateSingleUser,
   deleteSingleUser,
-  addProductToUser
+  addProductToUser,
+  getProductFromUser
 };
