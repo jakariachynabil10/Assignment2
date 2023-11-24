@@ -1,28 +1,45 @@
 import { Request, Response } from "express";
+import { fromZodError } from "zod-validation-error";
 import { UserService } from "./Users.service";
+import UserValidation, { OrdersSchemaValidation } from "./User.validation";
 
 const createUser = async (req: Request, res: Response) => {
   try {
-    const  user  = req.body;
-    const result = await UserService.createUserIntoDB(user);
+    const user = req.body;
+    const zodValidationData = UserValidation.safeParse(user);
 
-    const UserResponseCustomize = {
-      userId: result.userId,
-      username: result.username,
-      fullName: result.fullName,
-      age: result.age,
-      email: result.email,
-      isActive: result.isActive,
-      hobbies: result.hobbies,
-      address: result.address,
-      orders: result.orders,
-    };
+    if (zodValidationData.success) {
+      const result = await UserService.createUserIntoDB(zodValidationData.data);
 
-    res.status(200).json({
-      success: true,
-      message: "User is created Successfully",
-      data: UserResponseCustomize,
-    });
+      const UserResponseCustomize = {
+        userId: result.userId,
+        username: result.username,
+        fullName: result.fullName,
+        age: result.age,
+        email: result.email,
+        isActive: result.isActive,
+        hobbies: result.hobbies,
+        address: result.address,
+        orders: result.orders,
+      };
+
+      res.status(200).json({
+        success: true,
+        message: "User is created Successfully",
+        data: UserResponseCustomize,
+      });
+    } else {
+      const error = fromZodError(zodValidationData.error);
+      return res.status(500).json({
+        success: false,
+        message: error.message || "internal server error",
+        error: {
+          code: 400,
+          description: error.details,
+        },
+      });
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     res.status(500).json({
@@ -108,8 +125,6 @@ const getSingleUser = async (req: Request, res: Response) => {
   }
 };
 
-
-
 const getProductFromUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
@@ -129,7 +144,7 @@ const getProductFromUser = async (req: Request, res: Response) => {
 
     const UserResponseCustomize = {
       orders: result.orders,
-    }
+    };
 
     res.status(200).json({
       success: true,
@@ -166,8 +181,6 @@ const getTotalPrice = async (req: Request, res: Response) => {
       });
     }
 
-    
-
     res.status(200).json({
       success: true,
       message: "Order fetched Successfully",
@@ -189,8 +202,6 @@ const getTotalPrice = async (req: Request, res: Response) => {
     });
   }
 };
-
-
 
 const updateSingleUser = async (req: Request, res: Response) => {
   try {
@@ -237,6 +248,8 @@ const addProductToUser = async (req: Request, res: Response) => {
     const { userId } = req.params;
     const userIdNum = parseFloat(userId);
     const updateData = req.body;
+    const zodValidationData = OrdersSchemaValidation.safeParse(updateData);
+
     const checkUserExists = await UserService.getSingleUserFromDB(userIdNum);
 
     if (
@@ -253,16 +266,28 @@ const addProductToUser = async (req: Request, res: Response) => {
       });
     }
 
-    const result = await UserService.addProductToUserDB(
-      userIdNum,
-      updateData
-    );
+    if (zodValidationData.success) {
+      const result = await UserService.addProductToUserDB(
+        userIdNum,
+        zodValidationData.data
+      );
+      res.status(200).json({
+        success: true,
+        message: "User is created Successfully",
+        data: result,
+      });
+    } else {
+      const error = fromZodError(zodValidationData.error);
+      return res.status(500).json({
+        success: false,
+        message: error.message || "internal server error",
+        error: {
+          code: 400,
+          description: error.details,
+        },
+      });
+    }
 
-    res.status(200).json({
-      success: true,
-      message: "User update Successfully",
-      data: result,
-    });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     res.status(500).json({
@@ -319,5 +344,5 @@ export const UserController = {
   deleteSingleUser,
   addProductToUser,
   getProductFromUser,
-  getTotalPrice
+  getTotalPrice,
 };

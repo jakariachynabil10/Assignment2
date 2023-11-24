@@ -20,11 +20,11 @@ const UserAddressSchema = new Schema<UserAddress>(
 );
 
 export const OrdersSchema = new Schema<Orders>(
-  [{
+  {
     productName: { type: String, required: true },
     price: { type: Number, required: true },
     quantity: { type: Number, required: true },
-  }],
+  },
   { _id: false },
 );
 
