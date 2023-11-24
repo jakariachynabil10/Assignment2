@@ -38,7 +38,7 @@ const UserSchema = new Schema<User>({
   isActive: { type: Boolean },
   hobbies: [{ type: String }],
   address: UserAddressSchema,
-  orders: OrdersSchema,
+  orders: [OrdersSchema],
 });
 
 export const UserModel = model<User>("User", UserSchema);
