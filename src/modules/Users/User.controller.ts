@@ -3,7 +3,7 @@ import { UserService } from "./Users.service";
 
 const createUser = async (req: Request, res: Response) => {
   try {
-    const { user } = req.body;
+    const  user  = req.body;
     const result = await UserService.createUserIntoDB(user);
 
     const UserResponseCustomize = {
@@ -78,17 +78,17 @@ const getSingleUser = async (req: Request, res: Response) => {
       });
     }
 
-    const UserResponseCustomize = result.map((user) => ({
-      userId: user.userId,
-      username: user.username,
-      fullName: user.fullName,
-      age: user.age,
-      email: user.email,
-      isActive: user.isActive,
-      hobbies: user.hobbies,
-      address: user.address,
-      orders: user.orders,
-    }));
+    const UserResponseCustomize = {
+      userId: result.userId,
+      username: result.username,
+      fullName: result.fullName,
+      age: result.age,
+      email: result.email,
+      isActive: result.isActive,
+      hobbies: result.hobbies,
+      address: result.address,
+      orders: result.orders,
+    };
 
     res.status(200).json({
       success: true,
@@ -127,9 +127,9 @@ const getProductFromUser = async (req: Request, res: Response) => {
       });
     }
 
-    const UserResponseCustomize = result.map((user) => ({
-      orders: user.orders,
-    }));
+    const UserResponseCustomize = {
+      orders: result.orders,
+    }
 
     res.status(200).json({
       success: true,
@@ -148,6 +148,48 @@ const getProductFromUser = async (req: Request, res: Response) => {
     });
   }
 };
+
+const getTotalPrice = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const userIdNum = parseFloat(userId);
+    const result = await UserService.getTotalPriceFromUserDB(userIdNum);
+
+    if (!result || (Array.isArray(result) && result.length === 0)) {
+      return res.status(404).json({
+        success: false,
+        message: "User not Found",
+        error: {
+          code: "404",
+          description: "User Not Found",
+        },
+      });
+    }
+
+    
+
+    res.status(200).json({
+      success: true,
+      message: "Order fetched Successfully",
+      data: {
+        totalPrice: Number.isInteger(result[0]?.totalPrice)
+          ? result[0]?.totalPrice
+          : parseFloat(result[0]?.totalPrice.toFixed(2)) || 0,
+      },
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: "User not Found",
+      error: {
+        code: "404",
+        description: "User Not Found",
+      },
+    });
+  }
+};
+
 
 
 const updateSingleUser = async (req: Request, res: Response) => {
@@ -276,5 +318,6 @@ export const UserController = {
   updateSingleUser,
   deleteSingleUser,
   addProductToUser,
-  getProductFromUser
+  getProductFromUser,
+  getTotalPrice
 };

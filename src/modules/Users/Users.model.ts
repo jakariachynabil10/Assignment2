@@ -31,7 +31,7 @@ export const OrdersSchema = new Schema<Orders>(
 const UserSchema = new Schema<User>({
   userId: { type: Number, unique: true },
   username: { type: String, unique: true },
-  password: { type: String },
+  password: { type: String, select : false },
   fullName: UserNameSchema,
   age: { type: Number },
   email: { type: String },
