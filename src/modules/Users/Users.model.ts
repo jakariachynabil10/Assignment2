@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { Orders, User, UserAddress, UserName } from "./Users.interface";
+import { IUserModel, Orders, User, UserAddress, UserName } from "./Users.interface";
 
 
 const UserNameSchema = new Schema<UserName>(
@@ -28,7 +28,7 @@ export const OrdersSchema = new Schema<Orders>(
   { _id: false },
 );
 
-const UserSchema = new Schema<User>({
+const UserSchema = new Schema<User, IUserModel>({
   userId: { type: Number, unique: true },
   username: { type: String, unique: true },
   password: { type: String, select : false },
@@ -41,4 +41,12 @@ const UserSchema = new Schema<User>({
   orders: [OrdersSchema],
 });
 
-export const UserModel = model<User>("User", UserSchema);
+
+UserSchema.statics.isUserExists = async function (userId: number) {
+  const existingUser = await UserModel.findOne({ userId });
+  return existingUser;
+};
+
+
+
+export const UserModel = model<User, IUserModel>("User", UserSchema);

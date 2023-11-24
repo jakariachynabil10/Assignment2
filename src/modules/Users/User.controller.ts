@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { fromZodError } from "zod-validation-error";
 import { UserService } from "./Users.service";
 import UserValidation, { OrdersSchemaValidation } from "./User.validation";
+import { UserModel } from "./Users.model";
 
 const createUser = async (req: Request, res: Response) => {
   try {
@@ -82,29 +83,30 @@ const getSingleUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     const userIdNum = parseFloat(userId);
+    const checkUserExists = await UserModel.isUserExists(userIdNum)
     const result = await UserService.getSingleUserFromDB(userIdNum);
 
-    if (!result || (Array.isArray(result) && result.length === 0)) {
+    if (!checkUserExists) {
       return res.status(404).json({
         success: false,
-        message: "User not Found",
+        message: 'User not found',
         error: {
-          code: "404",
-          description: "User Not Found",
+          code: 404,
+          description: 'User not found!',
         },
       });
     }
 
     const UserResponseCustomize = {
-      userId: result.userId,
-      username: result.username,
-      fullName: result.fullName,
-      age: result.age,
-      email: result.email,
-      isActive: result.isActive,
-      hobbies: result.hobbies,
-      address: result.address,
-      orders: result.orders,
+      userId: result?.userId,
+      username: result?.username,
+      fullName: result?.fullName,
+      age: result?.age,
+      email: result?.email,
+      isActive: result?.isActive,
+      hobbies: result?.hobbies,
+      address: result?.address,
+      orders: result?.orders,
     };
 
     res.status(200).json({
@@ -129,21 +131,21 @@ const getProductFromUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     const userIdNum = parseFloat(userId);
+    const checkUserExists = await UserModel.isUserExists(userIdNum);
     const result = await UserService.getSingleUserFromDB(userIdNum);
-
-    if (!result || (Array.isArray(result) && result.length === 0)) {
+    if (!checkUserExists) {
       return res.status(404).json({
         success: false,
-        message: "User not Found",
+        message: 'User not found',
         error: {
-          code: "404",
-          description: "User Not Found",
+          code: 404,
+          description: 'User not found!',
         },
       });
     }
 
     const UserResponseCustomize = {
-      orders: result.orders,
+      orders: result?.orders,
     };
 
     res.status(200).json({
@@ -168,15 +170,16 @@ const getTotalPrice = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     const userIdNum = parseFloat(userId);
+    const checkUserExists = await UserModel.isUserExists(userIdNum);
     const result = await UserService.getTotalPriceFromUserDB(userIdNum);
 
-    if (!result || (Array.isArray(result) && result.length === 0)) {
+    if (!checkUserExists) {
       return res.status(404).json({
         success: false,
-        message: "User not Found",
+        message: 'User not found',
         error: {
-          code: "404",
-          description: "User Not Found",
+          code: 404,
+          description: 'User not found!',
         },
       });
     }
@@ -208,18 +211,15 @@ const updateSingleUser = async (req: Request, res: Response) => {
     const { userId } = req.params;
     const userIdNum = parseFloat(userId);
     const updateData = req.body;
-    const checkUserExists = await UserService.getSingleUserFromDB(userIdNum);
+    const checkUserExists = await UserModel.isUserExists(userIdNum);
 
-    if (
-      !checkUserExists ||
-      (Array.isArray(checkUserExists) && checkUserExists.length === 0)
-    ) {
+    if (!checkUserExists) {
       return res.status(404).json({
         success: false,
-        message: "User not Found",
+        message: 'User not found',
         error: {
-          code: "404",
-          description: "User Not Found",
+          code: 404,
+          description: 'User not found!',
         },
       });
     }
@@ -250,7 +250,7 @@ const addProductToUser = async (req: Request, res: Response) => {
     const updateData = req.body;
     const zodValidationData = OrdersSchemaValidation.safeParse(updateData);
 
-    const checkUserExists = await UserService.getSingleUserFromDB(userIdNum);
+    const checkUserExists = await UserModel.isUserExists(userIdNum);
 
     if (
       !checkUserExists ||
@@ -303,18 +303,15 @@ const deleteSingleUser = async (req: Request, res: Response) => {
     const { userId } = req.params;
     const userIdNum = parseFloat(userId);
 
-    const checkUserExists = await UserService.getSingleUserFromDB(userIdNum);
+    const checkUserExists = await UserModel.isUserExists(userIdNum);
 
-    if (
-      !checkUserExists ||
-      (Array.isArray(checkUserExists) && checkUserExists.length === 0)
-    ) {
+    if (!checkUserExists) {
       return res.status(404).json({
         success: false,
-        message: "User not Found",
+        message: 'User not found',
         error: {
-          code: "404",
-          description: "User Not Found",
+          code: 404,
+          description: 'User not found!',
         },
       });
     }
@@ -335,6 +332,13 @@ const deleteSingleUser = async (req: Request, res: Response) => {
     });
   }
 };
+
+
+
+
+
+
+
 
 export const UserController = {
   createUser,
