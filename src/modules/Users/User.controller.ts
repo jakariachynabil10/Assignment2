@@ -111,8 +111,7 @@ const updateSingleUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     const userIdNum = parseFloat(userId);
-    const updateData = req.body.user;
-
+    const updateData = req.body;
     const checkUserExists = await UserService.getSingleUserFromDB(userIdNum);
 
     if (
@@ -131,7 +130,7 @@ const updateSingleUser = async (req: Request, res: Response) => {
 
     const result = await UserService.updateSingleUserFromDB(
       userIdNum,
-      updateData,
+      updateData
     );
 
     res.status(200).json({
@@ -148,7 +147,46 @@ const updateSingleUser = async (req: Request, res: Response) => {
     });
   }
 };
+const addProductToUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const userIdNum = parseFloat(userId);
+    const updateData = req.body;
+    const checkUserExists = await UserService.getSingleUserFromDB(userIdNum);
 
+    if (
+      !checkUserExists ||
+      (Array.isArray(checkUserExists) && checkUserExists.length === 0)
+    ) {
+      return res.status(404).json({
+        success: false,
+        message: "User not Found",
+        error: {
+          code: "404",
+          description: "User Not Found",
+        },
+      });
+    }
+
+    const result = await UserService.addProductToUserDB(
+      userIdNum,
+      updateData
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "User update Successfully",
+      data: result,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+      error: err,
+    });
+  }
+};
 
 const deleteSingleUser = async (req: Request, res: Response) => {
   try {
@@ -171,7 +209,7 @@ const deleteSingleUser = async (req: Request, res: Response) => {
       });
     }
 
-    const result = await UserService.deleteSingleUserFromDB(userIdNum)
+    const result = await UserService.deleteSingleUserFromDB(userIdNum);
 
     res.status(200).json({
       success: true,
@@ -193,5 +231,6 @@ export const UserController = {
   getAllUsers,
   getSingleUser,
   updateSingleUser,
-  deleteSingleUser
+  deleteSingleUser,
+  addProductToUser
 };

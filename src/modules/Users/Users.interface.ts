@@ -1,4 +1,4 @@
-import { Orders } from "../Orders/Order.interface";
+
 
 export type UserName = {
   firstName: string;
@@ -10,6 +10,15 @@ export type UserAddress = {
   city: string;
   country: string;
 };
+
+export type Orders = [
+  {
+    productName : string,
+    price : number,
+    quantity : number
+
+  }
+]
 
 export type User = {
   userId: number;

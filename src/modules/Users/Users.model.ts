@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
-import { User, UserAddress, UserName } from "./Users.interface";
-import { Orders } from "../Orders/Order.interface";
+import { Orders, User, UserAddress, UserName } from "./Users.interface";
+
 
 const UserNameSchema = new Schema<UserName>(
   {
@@ -19,12 +19,12 @@ const UserAddressSchema = new Schema<UserAddress>(
   { _id: false },
 );
 
-const OrdersSchema = new Schema<Orders>(
-  {
+export const OrdersSchema = new Schema<Orders>(
+  [{
     productName: { type: String, required: true },
     price: { type: Number, required: true },
     quantity: { type: Number, required: true },
-  },
+  }],
   { _id: false },
 );
 

@@ -1,4 +1,4 @@
-import { User } from "./Users.interface";
+import { Orders, User } from "./Users.interface";
 import { UserModel } from "./Users.model";
 
 const createUserIntoDB = async (user: User) => {
@@ -22,7 +22,7 @@ const getSingleUserFromDB = async (userId: number) => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const updateSingleUserFromDB = async (id: number, newData: any) => {
-  const result = await UserModel.updateOne({ userId: id }, newData);
+  const result = await UserModel.updateOne({ userId: id }, newData, {new : true});
   return result;
 };
 
@@ -31,10 +31,16 @@ const deleteSingleUserFromDB = async (id : number) =>{
   return result
 }
 
+const addProductToUserDB = async (id : number, order : Orders) =>{
+  const result = await UserModel.updateOne({userId : id}, {$push : {orders : order}})
+  return result
+}
+
 export const UserService = {
   createUserIntoDB,
   getAllUserFromDB,
   getSingleUserFromDB,
   updateSingleUserFromDB,
-  deleteSingleUserFromDB
+  deleteSingleUserFromDB,
+  addProductToUserDB
 };
