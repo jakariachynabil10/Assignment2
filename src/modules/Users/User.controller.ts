@@ -83,16 +83,16 @@ const getSingleUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     const userIdNum = parseFloat(userId);
-    const checkUserExists = await UserModel.isUserExists(userIdNum)
+    const checkUserExists = await UserModel.isUserExists(userIdNum);
     const result = await UserService.getSingleUserFromDB(userIdNum);
 
     if (!checkUserExists) {
       return res.status(404).json({
         success: false,
-        message: 'User not found',
+        message: "User not found",
         error: {
           code: 404,
-          description: 'User not found!',
+          description: "User not found!",
         },
       });
     }
@@ -136,10 +136,10 @@ const getProductFromUser = async (req: Request, res: Response) => {
     if (!checkUserExists) {
       return res.status(404).json({
         success: false,
-        message: 'User not found',
+        message: "User not found",
         error: {
           code: 404,
-          description: 'User not found!',
+          description: "User not found!",
         },
       });
     }
@@ -176,10 +176,10 @@ const getTotalPrice = async (req: Request, res: Response) => {
     if (!checkUserExists) {
       return res.status(404).json({
         success: false,
-        message: 'User not found',
+        message: "User not found",
         error: {
           code: 404,
-          description: 'User not found!',
+          description: "User not found!",
         },
       });
     }
@@ -216,17 +216,17 @@ const updateSingleUser = async (req: Request, res: Response) => {
     if (!checkUserExists) {
       return res.status(404).json({
         success: false,
-        message: 'User not found',
+        message: "User not found",
         error: {
           code: 404,
-          description: 'User not found!',
+          description: "User not found!",
         },
       });
     }
 
     const result = await UserService.updateSingleUserFromDB(
       userIdNum,
-      updateData
+      updateData,
     );
 
     res.status(200).json({
@@ -269,7 +269,7 @@ const addProductToUser = async (req: Request, res: Response) => {
     if (zodValidationData.success) {
       const result = await UserService.addProductToUserDB(
         userIdNum,
-        zodValidationData.data
+        zodValidationData.data,
       );
       res.status(200).json({
         success: true,
@@ -308,10 +308,10 @@ const deleteSingleUser = async (req: Request, res: Response) => {
     if (!checkUserExists) {
       return res.status(404).json({
         success: false,
-        message: 'User not found',
+        message: "User not found",
         error: {
           code: 404,
-          description: 'User not found!',
+          description: "User not found!",
         },
       });
     }
@@ -332,13 +332,6 @@ const deleteSingleUser = async (req: Request, res: Response) => {
     });
   }
 };
-
-
-
-
-
-
-
 
 export const UserController = {
   createUser,

@@ -1,8 +1,13 @@
 import { Schema, model } from "mongoose";
-import bcrypt from 'bcrypt';
-import { IUserModel, Orders, User, UserAddress, UserName } from "./Users.interface";
+import bcrypt from "bcrypt";
+import {
+  IUserModel,
+  Orders,
+  User,
+  UserAddress,
+  UserName,
+} from "./Users.interface";
 import confiq from "../../app/confiq";
-
 
 const UserNameSchema = new Schema<UserName>(
   {
@@ -33,7 +38,7 @@ export const OrdersSchema = new Schema<Orders>(
 const UserSchema = new Schema<User, IUserModel>({
   userId: { type: Number, unique: true },
   username: { type: String, unique: true },
-  password: { type: String, select : false },
+  password: { type: String, select: false },
   fullName: UserNameSchema,
   age: { type: Number },
   email: { type: String },
@@ -43,8 +48,7 @@ const UserSchema = new Schema<User, IUserModel>({
   orders: [OrdersSchema],
 });
 
-
-UserSchema.pre('save', async function (next) {
+UserSchema.pre("save", async function (next) {
   // console.log(this, 'pre hook will save the data');
 
   // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -58,22 +62,15 @@ UserSchema.pre('save', async function (next) {
 });
 
 // post save middleware
-UserSchema.post('save', function (doc, next) {
-  doc.password = '';
+UserSchema.post("save", function (doc, next) {
+  doc.password = "";
 
   next();
 });
-
-
-
 
 UserSchema.statics.isUserExists = async function (userId: number) {
   const existingUser = await UserModel.findOne({ userId });
   return existingUser;
 };
-
-
-
-
 
 export const UserModel = model<User, IUserModel>("User", UserSchema);
